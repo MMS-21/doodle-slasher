@@ -450,7 +450,7 @@
 .battle-toolbar[hidden],#touch-controls.battle-hidden{display:none!important}
 .battle-toolbar button,#mobile-extras button,.upgrade-hub-tabs button{font:700 13px/1.2 system-ui,sans-serif;min-height:44px;padding:8px 14px;border:2px solid #342b38;border-radius:8px;background:#fff8e9;color:#302636;cursor:pointer}
 .battle-toolbar #upgrade-hub-toggle{background:#ffe29a}
-.battle-toolbar svg{display:none}
+.battle-toolbar svg,.battle-toolbar .mobile-only,#weapon-hud [data-weapon-action][hidden]{display:none}
 #controls-toggle{top:62px;min-height:44px}
 #upgrade-alert{display:none!important}
 #quick-status{width:auto!important;display:block!important;pointer-events:none;top:12%;left:2.8%}
@@ -673,8 +673,39 @@
    border-radius:40%;
  }
  #weapon-hud {top:calc(max(44px,14dvh) + 48px);right:calc(max(12px,env(safe-area-inset-right)) + 58px);width:116px;grid-template-columns:minmax(0,1fr) auto;}
- #weapon-hud .weapon-quick-actions [data-weapon-action="swap"] {display:none;}
- #weapon-hud .weapon-view img {height:25px;}
+ #weapon-hud .weapon-quick-actions,
+ #weapon-hud .weapon-view img {display:none;}
+ #weapon-hud {grid-template-columns:1fr;}
+ #touch-controls .mobile-combat .touch-fire img {
+   width:78%;
+   height:46%;
+   object-fit:contain;
+   transform:translateY(-2px) scale(1.45);
+   pointer-events:none;
+ }
+ .battle-toolbar .mobile-only:not([hidden]) {display:flex;}
+ .battle-toolbar #mobile-buy-ammo {
+   position:absolute;
+   right:calc(100% + 6px);
+   bottom:0;
+   width:62px;
+ }
+ #mobile-buy-ammo svg {width:15px;height:15px;}
+ #mobile-buy-ammo small {font-size:8px;}
+ #mobile-buy-ammo:disabled {color:#705e62;border-color:#705e62;box-shadow:none;}
+ #mobile-weapons.weapon-spark {background:#ffe29a;}
+ #mobile-weapons.weapon-spark::after {
+   content:'';
+   position:absolute;
+   top:-6px;
+   right:-5px;
+   width:14px;
+   height:14px;
+   background:#b9691e;
+   clip-path:polygon(50% 0,63% 36%,100% 50%,63% 64%,50% 100%,37% 64%,0 50%,37% 36%);
+   pointer-events:none;
+ }
+
  #touch-controls .battle-specials {
    bottom:calc(var(--saw-diameter) + 18px);
    right:calc(52px + var(--saw-diameter) + var(--fire-diameter) + max(36px,env(safe-area-inset-right) + 24px));
@@ -700,6 +731,20 @@
  #touch-controls .joystick-base {background:#fff6df80;border-color:#302734b3;}
  #touch-controls .joystick-knob {background:#edd8a9;border:2px solid #302734;}
  #touch-controls .joystick-direction {color:#302734;}
+}
+
+@media (pointer:coarse) and (prefers-reduced-motion:no-preference) {
+ #mobile-weapons.weapon-spark::after {animation:weapon-spark .55s ease-out 3 both;}
+}
+@keyframes weapon-spark {
+ 0% {transform:scale(.6) rotate(-15deg);}
+ 36% {transform:scale(1.25) rotate(12deg);}
+ 100% {transform:scale(.8);}
+}
+
+@media (pointer:coarse) and (max-height:355px) {
+ .battle-toolbar #mobile-buy-ammo {bottom:32px;}
+ #weapon-hud {right:calc(max(12px,env(safe-area-inset-right)) + 124px);}
 }
 
 </style>
@@ -959,7 +1004,7 @@ button { font:inherit; cursor:pointer; }
     <div class="mobile-combat" aria-label="Primary combat controls">
       <button type="button" class="touch-key mobile-dash" data-game-key="PadDash" aria-label="Dash" hidden disabled>DASH</button>
       <button type="button" class="touch-key touch-primary touch-saw" data-game-key="PadAttack" aria-label="Chainsaw attack"><svg viewBox="0 0 36 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l2-6 10 1 1 9-12 1z" fill="#e6a443"/><path d="M15 10l16-2 2 3-2 4-15 2z" fill="#d5d4cf"/><path d="M6 7V4l7 1v3m5 8 2 2m2-3 2 2m2-3 2 2m2-3 2 1"/></svg><span>SAW</span></button>
-      <button type="button" class="touch-key touch-primary touch-fire" data-game-key="PadWeaponFire" aria-label="Fire equipped weapon"><svg viewBox="0 0 36 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l22 1-1 7-10-1-3 8-7-2 3-6-4-1z" fill="#b3b8bd"/><path d="M9 14l5 1-2 6-7-2z" fill="#d96c62"/><path d="M28 9l4-4m-3 8 5 1m-6 1 3 4" stroke="#a7283c"/></svg><span>FIRE</span></button>
+      <button type="button" class="touch-key touch-primary touch-fire" data-game-key="PadWeaponFire" aria-label="Fire equipped weapon"><img id="mobile-fire-art" alt="" hidden><span>FIRE</span></button>
       <button type="button" class="touch-key mobile-swap" id="mobile-weapon-swap" aria-label="Swap weapon" title="Swap weapon">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 8 15-1m-4-4 5 4-5 5M20 16l-15 1m4-5-5 5 5 4"/></svg>
       </button>
@@ -1007,6 +1052,12 @@ button { font:inherit; cursor:pointer; }
     </button>
     <button type="button" id="mobile-more" aria-label="Pause and control preferences" aria-controls="mobile-extras" aria-expanded="false">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 4 3 1v14l-4 1zm7 1 4-1 1 15-4 1z"/></svg><span>PAUSE</span>
+    </button>
+    <button type="button" id="mobile-weapons" class="mobile-only">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 18 1-1 7-9-1-3 7-5-2 3-6-3-1zM11 13l-1 3 4 1 2-3"/></svg><span>WEAPONS</span>
+    </button>
+    <button type="button" id="mobile-buy-ammo" class="mobile-only" hidden disabled>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V9l3-6 3 6v11zm9 0V9l3-6 3 6v11zM5 16h6m3 0h6"/></svg><span>BUY AMMO</span><small>15 COINS</small>
     </button>
   </nav>
   <section id="rotate-device" class="rotate-device" aria-label="Landscape mode required">
@@ -4063,7 +4114,10 @@ function arsenalBuy(id) {
   if(e) {
     e.rank=next;e.mag=s.clip??0;e.reserve=s.reserve??0;e.reload=0;e.cd=0;
   } else a.inventory[id]={rank:0,mag:s.clip??0,reserve:s.reserve??0,cd:0,reload:0};
-  if(!e) arsenalMenuSelection=id;
+  if(!e) {
+    arsenalMenuSelection=id;
+    a.newWeapon=id;
+  }
   a.notice=next ? `${meta.name.toUpperCase()} · RANK ${next}` : `${meta.name.toUpperCase()} UNLOCKED`;
   Sfx.pick();
   arsenalRefreshHUD(true);
@@ -4256,16 +4310,30 @@ function arsenalRefreshHUD(force=false){
   if(!root)return;
   root.hidden=!(a&&G.state==='play');if(!a||G.state!=='play')return;
   const id=a.selected,e=a.inventory[id],s=arsenalStats(id,e.rank),meta=arsenalMeta(id);
-  const ammo=s.clip ? (e.reload>0?'RELOADING '+Math.max(0,e.reload).toFixed(1)+'s':e.mag+' / '+e.reserve) : 'UNLIMITED';
-  const signature=id+e.rank+ammo+(e.cd>0?'CD':'READY')+G.coins+arsenalNeedsAmmo();
+  const ammo=s.clip ? e.mag+' / '+e.reserve : 'UNLIMITED';
+  const lowAmmo=Boolean(s.clip && e.mag+e.reserve<=s.clip);
+  const reloadProgress=e.reload>0?Math.round(100*Math.max(0,1-e.reload/(s.reload||1))):100;
+  const signature=[id,e.rank,ammo,lowAmmo,reloadProgress,e.reload>0,G.coins].join('|');
   if(!force&&a.hudCache===signature)return;
   a.hudCache=signature;
   root.setAttribute?.('aria-label',meta.name+'. Weapon, ammunition and quick actions.');
   root.setAttribute?.('title','Weapon and ammunition');
-  const ready=e.reload>0?'RELOADING':e.cd>0?'COOLDOWN':'READY';
-  const loadPct=e.reload>0?Math.max(0,1-e.reload/(s.reload||1)):1;
-  const canBuy=G.coins>=15&&arsenalNeedsAmmo();
-  root.innerHTML=`<div class="weapon-view"><span class="floating-ammo" aria-label="Ammunition">${ammo}</span><img src="${arsenalEsc(arsenalAsset(meta.spritePaths[e.rank]))}" alt="${arsenalEsc(meta.name)}"/><strong>${arsenalEsc(meta.name)} <small>R${e.rank}/5</small></strong><div class="weapon-reload-track" role="progressbar" aria-label="Reload progress" aria-valuenow="${Math.round(loadPct*100)}" aria-valuemin="0" aria-valuemax="100" ${e.reload<=0?'hidden':''}><i style="width:${Math.round(loadPct*100)}%"></i></div></div><div class="weapon-quick-actions"><button type="button" data-weapon-action="ammo" ${canBuy?'':'disabled'} aria-label="${!arsenalNeedsAmmo()?'Ammunition full':G.coins<15?'Need '+(15-G.coins)+' more coins to buy ammo':'Buy ammo: refill all owned weapons for 15 coins'}" title="Refill all owned weapons: 15 coins"><svg viewBox="0 0 28 28" width="24" height="24" aria-hidden="true"><path d="M5 23V11l3-7 3 7v12zM16 23V11l3-7 3 7v12zM5 18h6m5 0h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>AMMO <small>15 COINS</small></span></button><button type="button" data-weapon-action="swap" aria-label="Swap weapon. Keyboard C." title="Swap weapon (C)"><svg viewBox="0 0 28 20" width="24" height="20" aria-hidden="true"><path d="M3 6l20-1m-5-4l6 4-5 5M25 15L5 16m5-5l-6 5 5 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>SWAP <small class="swap-desktop">C</small></span></button></div>`;
+  const sprite=arsenalAsset(meta.spritePaths[e.rank]);
+  const canBuy=lowAmmo&&G.coins>=15&&arsenalNeedsAmmo();
+  const ammoLabel=G.coins<15?'Need '+(15-G.coins)+' more coins to buy ammo':'Buy ammo: refill all owned weapons for 15 coins';
+  const fireArt=document.getElementById('mobile-fire-art');
+  if(fireArt){
+    if(fireArt.getAttribute('src')!==sprite)fireArt.src=sprite;
+    fireArt.hidden=false;
+    fireArt.parentElement.setAttribute('aria-label','Use '+meta.name);
+  }
+  const mobileAmmo=document.getElementById('mobile-buy-ammo');
+  if(mobileAmmo){
+    mobileAmmo.hidden=!lowAmmo;
+    mobileAmmo.disabled=!canBuy;
+    mobileAmmo.setAttribute('aria-label',ammoLabel);
+  }
+  root.innerHTML=`<div class="weapon-view"><span class="floating-ammo" aria-label="Ammunition">${ammo}</span><img src="${arsenalEsc(sprite)}" alt="${arsenalEsc(meta.name)}"/><strong>${arsenalEsc(meta.name)} <small>R${e.rank}/5</small></strong><div class="weapon-reload-track" role="progressbar" aria-label="Reload progress" aria-valuenow="${reloadProgress}" aria-valuemin="0" aria-valuemax="100" ${e.reload<=0?'hidden':''}><i style="width:${reloadProgress}%"></i></div></div><div class="weapon-quick-actions"><button type="button" data-weapon-action="ammo" ${lowAmmo?'':'hidden'} ${canBuy?'':'disabled'} aria-label="${ammoLabel}" title="Refill all owned weapons: 15 coins"><svg viewBox="0 0 28 28" width="24" height="24" aria-hidden="true"><path d="M5 23V11l3-7 3 7v12zM16 23V11l3-7 3 7v12zM5 18h6m5 0h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>AMMO <small>15 COINS</small></span></button><button type="button" data-weapon-action="swap" aria-label="Swap weapon. Keyboard C." title="Swap weapon (C)"><svg viewBox="0 0 28 20" width="24" height="20" aria-hidden="true"><path d="M3 6l20-1m-5-4l6 4-5 5M25 15L5 16m5-5l-6 5 5 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>SWAP <small class="swap-desktop">C</small></span></button></div>`;
 
 }
 function openArsenal(){
@@ -4330,7 +4398,7 @@ function renderArsenalMenu(){
   const weaponCards=ARSENAL_WEAPONS.map(w=>{
     const owned=a.inventory[w.id],rank=owned?.rank??0,ready=owned&&a.selected===w.id;
     const sprite=arsenalAsset(w.spritePaths[rank]);
-    return `<button type="button" class="weapon-card ${w.id===selected.id?'chosen':''} ${ready?'equipped':''}" data-weapon="${w.id}" aria-pressed="${w.id===selected.id}"><img src="${arsenalEsc(sprite)}" alt=""/><strong>${arsenalEsc(w.name)}</strong><small>${owned?'RANK '+rank+'/5':arsenalCost(w.basePrice)+' COINS'}${ready?' · EQUIPPED':''}</small></button>`;
+    return `<button type="button" class="weapon-card ${w.id===selected.id?'chosen':''} ${ready?'equipped':''}" data-weapon="${w.id}" aria-pressed="${w.id===selected.id}"><img src="${arsenalEsc(sprite)}" alt=""/><strong>${arsenalEsc(w.name)}</strong><small>${owned?'RANK '+rank+'/5':arsenalCost(w.basePrice)+' COINS'}${ready?' · EQUIPPED':''}${a.newWeapon===w.id?' · NEW':''}</small></button>`;
   }).join('');
   const ranks=selected.upgrades.map(u=>`<span class="weapon-rank-sticker ${entry&&entry.rank>=u.rank?'owned':''}" title="${arsenalEsc(u.name)}"><img src="${arsenalEsc(arsenalAsset(u.icon))}" alt=""/><small>${u.rank}</small></span>`).join('');
   let action='';
@@ -5267,6 +5335,7 @@ if(typeof document!=='undefined'&&document.addEventListener)document.addEventLis
 'use strict';
 // Shared entry points keep the existing shops and their gameplay state machine.
 let battleReturnFocus=null;
+let weaponSparkTimer;
 function releaseBattleInput(){
   if(window.__doodleMobile)window.__doodleMobile.reset();
   if(window.__doodleTouch)window.__doodleTouch.reset();
@@ -5348,6 +5417,12 @@ function closeBattlePause(restoreFocus=true){
       else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
     }
   });
+  document.getElementById('mobile-weapons')?.addEventListener('click',()=>openUpgradeHub('weapons'));
+  const mobileAmmo=document.getElementById('mobile-buy-ammo');
+  mobileAmmo?.addEventListener('pointerdown',e=>e.stopPropagation());
+  mobileAmmo?.addEventListener('click',()=>{
+    if(G.state==='play'&&!G.choosing&&!G.paused&&!G.hero?.dead)arsenalRestock();
+  });
   const mobileSwap=document.getElementById('mobile-weapon-swap');
   mobileSwap?.addEventListener('pointerdown',e=>e.stopPropagation());
   mobileSwap?.addEventListener('click',()=>{
@@ -5391,6 +5466,19 @@ function closeBattlePause(restoreFocus=true){
 function refreshBattleUI(){
   const active=G.state==='play'&&!G.hero?.dead;
   document.querySelector('.battle-toolbar').hidden=!active||G.choosing;
+  if(active&&!G.choosing&&G.arsenal?.newWeapon){
+    const shortcut=document.getElementById('mobile-weapons');
+    if(shortcut){
+      shortcut.classList.add('weapon-spark');
+      shortcut.setAttribute('aria-label','Weapons. New unlock: '+arsenalMeta(G.arsenal.newWeapon).name);
+      clearTimeout(weaponSparkTimer);
+      weaponSparkTimer=setTimeout(()=>{
+        shortcut.classList.remove('weapon-spark');
+        shortcut.removeAttribute('aria-label');
+      },2200);
+    }
+    G.arsenal.newWeapon=null;
+  }
   const touch=document.getElementById('touch-controls');touch.classList.toggle('battle-hidden',!active||G.choosing||G.paused);
   const dash=touch.querySelector('.mobile-dash');dash.hidden=!G.dash;dash.disabled=!G.dash;
   for(const b of touch.querySelectorAll('[data-unlock]'))b.hidden=!G[b.dataset.unlock];
