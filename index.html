@@ -485,8 +485,38 @@
   #touch-controls .mobile-movement,#touch-controls .mobile-combat,#touch-controls .battle-specials{opacity:var(--battle-opacity)}
   #touch-controls .mobile-combat{display:grid;grid-template-columns:52px var(--saw-diameter) var(--fire-diameter);grid-template-rows:48px var(--saw-diameter);width:auto!important;height:auto;gap:8px;align-items:end;right:max(12px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom))}
   #touch-controls .mobile-combat .touch-key{position:static;min-height:44px;border-radius:10px;font:700 13px/1 system-ui,sans-serif;opacity:1;justify-self:center}
-  #touch-controls .mobile-combat .touch-saw{grid-column:2;grid-row:2;width:var(--saw-diameter);height:var(--saw-diameter);border-radius:50%;font-size:20px;background:#a64622}
-  #touch-controls .mobile-combat .touch-fire{grid-column:3;grid-row:2;width:var(--fire-diameter);height:var(--fire-diameter);border-radius:50%;background:#a52948}
+  #touch-controls .mobile-combat .touch-saw,
+  #touch-controls .mobile-combat .touch-fire {
+    grid-row:2;
+    position:relative;
+    flex-direction:column;
+    gap:1px;
+    background:#fff6df;
+    color:#302734;
+    border:2px solid #302734;
+    border-radius:18% 23% 18% 24% / 21% 16% 24% 18%;
+    box-shadow:2px 3px 0 #30273480;
+    font:700 18px/1 'Gochi Hand',cursive;
+    text-shadow:none;
+  }
+  #touch-controls .mobile-combat .touch-saw {grid-column:2;width:var(--saw-diameter);height:var(--saw-diameter);transform:rotate(-3deg);}
+  #touch-controls .mobile-combat .touch-fire {grid-column:3;width:var(--fire-diameter);height:var(--fire-diameter);transform:rotate(3deg);}
+  #touch-controls .mobile-combat .touch-primary svg {width:54%;height:auto;pointer-events:none;}
+  #touch-controls .mobile-combat .touch-primary span {border-bottom:2px solid #b33b48;pointer-events:none;}
+  #touch-controls .mobile-combat .touch-saw span {border-color:#b56b24;}
+  #touch-controls .mobile-combat .touch-primary.pressed {transform:translateY(2px);border-color:#302734!important;}
+  #touch-controls .mobile-combat .mobile-ultimate {
+    grid-column:3;
+    grid-row:1;
+    width:var(--fire-diameter);
+    height:48px;
+    font:700 12px/1 'Gochi Hand',cursive;
+    background:#e9dbf0;
+    border-color:#624776;
+    color:#523963;
+    text-shadow:none;
+  }
+  #touch-controls .mobile-combat .mobile-ultimate.ready {background:#653d87;color:#fff7ef;border-color:#e2c3f5;}
   #touch-controls .mobile-combat .touch-jump{grid-column:1;grid-row:2;width:52px;height:56px;background:#225e99;color:white;border-color:#bddcff}
   #touch-controls .mobile-combat .mobile-dash{grid-column:1;grid-row:1;width:52px;height:48px;background:#34394e}
   #touch-controls .mobile-combat .mobile-bomb{grid-column:2;grid-row:1;width:var(--saw-diameter);height:48px;position:relative;flex-direction:row;gap:2px;background:#60358b;transform:none}
@@ -602,9 +632,22 @@
  .battle-coins{font-size:12px;}
 }
 @media(pointer:coarse){
- .battle-toolbar{top:auto;bottom:calc(clamp(105px,32dvh,148px) + 46px);left:max(12px,env(safe-area-inset-left));right:auto;}
- html[data-control-hand="left"] .battle-toolbar{left:auto;right:max(12px,env(safe-area-inset-right));}
- #weapon-hud{top:24%;}
+ .battle-toolbar {
+   top:max(44px,14dvh,calc(env(safe-area-inset-top) + 44px));
+   right:max(12px,env(safe-area-inset-right));
+   gap:6px;
+ }
+ .battle-toolbar button {font:700 15px/1 'Gochi Hand',cursive;padding:6px 10px;border-radius:5px 8px 4px 7px;}
+ #weapon-hud {top:calc(max(44px,14dvh) + 48px);width:184px;max-width:38%;grid-template-columns:minmax(0,1fr) auto;}
+ #weapon-hud .weapon-quick-actions {flex-direction:row;gap:4px;}
+ #weapon-hud .weapon-view img {height:25px;}
+ #touch-controls .battle-specials {
+   bottom:calc(var(--saw-diameter) + 18px);
+   right:calc(52px + var(--saw-diameter) + var(--fire-diameter) + max(36px,env(safe-area-inset-right) + 24px));
+ }
+ #touch-controls[data-hand="left"] .battle-specials {
+   left:calc(52px + var(--saw-diameter) + var(--fire-diameter) + max(36px,env(safe-area-inset-left) + 24px));
+ }
 }
 
 </style>
@@ -864,8 +907,9 @@ button { font:inherit; cursor:pointer; }
     <div class="mobile-combat" aria-label="Primary combat controls">
       <button type="button" class="touch-key touch-jump" data-game-key="PadJump" aria-label="Jump or rise on the carpet">JUMP</button>
       <button type="button" class="touch-key mobile-dash" data-game-key="PadDash" aria-label="Dash" hidden disabled>DASH</button>
-      <button class="touch-key touch-primary touch-saw" data-game-key="PadAttack" aria-label="Chainsaw attack">SAW</button>
-      <button class="touch-key touch-primary touch-fire" data-game-key="PadWeaponFire" aria-label="Fire equipped weapon">FIRE</button>
+      <button type="button" class="touch-key touch-primary touch-saw" data-game-key="PadAttack" aria-label="Chainsaw attack"><svg viewBox="0 0 36 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l2-6 10 1 1 9-12 1z" fill="#e6a443"/><path d="M15 10l16-2 2 3-2 4-15 2z" fill="#d5d4cf"/><path d="M6 7V4l7 1v3m5 8 2 2m2-3 2 2m2-3 2 2m2-3 2 1"/></svg><span>SAW</span></button>
+      <button type="button" class="touch-key touch-primary touch-fire" data-game-key="PadWeaponFire" aria-label="Fire equipped weapon"><svg viewBox="0 0 36 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l22 1-1 7-10-1-3 8-7-2 3-6-4-1z" fill="#b3b8bd"/><path d="M9 14l5 1-2 6-7-2z" fill="#d96c62"/><path d="M28 9l4-4m-3 8 5 1m-6 1 3 4" stroke="#a7283c"/></svg><span>FIRE</span></button>
+      <button type="button" class="touch-key mobile-ultimate" id="mobile-ultimate" disabled aria-label="Ultimate requires 100 Spirit">ULTIMATE</button>
       <button class="touch-key touch-small mobile-bomb" data-game-key="PadCarpetGrenade" aria-label="Throw a magic carpet grenade" type="button" hidden disabled>
         <svg viewBox="0 0 48 48" width="27" height="27" aria-hidden="true" focusable="false">
           <path d="M20 10l5-3 6 4-4 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
@@ -5459,20 +5503,33 @@ function updateSpirit(dt){
 function refreshSpiritHUD(){
   const root=document.getElementById('spirit-hud');if(!root)return;
   root.hidden=G.state!=='play'||G.choosing||G.paused||G.hero?.dead||G.tutorialActive;
-  if(root.hidden)return;
+  const mobile=document.getElementById('mobile-ultimate');
+  if(root.hidden){if(mobile)mobile.disabled=true;return;}
   const value=Math.min(SPIRIT_MAX,G.spirit||0),ready=value>=SPIRIT_MAX&&!(G.spiritUltimateT>0);
   const button=document.getElementById('spirit-ultimate'),meter=document.getElementById('spirit-meter');
   button.disabled=!ready;button.classList.toggle('ready',ready);
+  if(mobile){
+    mobile.disabled=!ready;
+    mobile.classList.toggle('ready',ready);
+    mobile.setAttribute('aria-label',ready?'Activate plasma ultimate':`Ultimate requires 100 Spirit. Current Spirit: ${value}.`);
+  }
   button.setAttribute('aria-label',ready?'Launch plasma ultimate. Keyboard V. Clears nearby enemies.':`Spirit ${value} of 100. Collect blue spirit orbs from enemies.`);
   button.title=ready?'Plasma explosion: V or tap. Clears nearby enemies.':'Collect spirit orbs to fill the bar (100).';
   document.getElementById('spirit-label').textContent=ready?'PLASMA READY · V':`SPIRIT ${value} / 100`;
   meter.setAttribute('aria-valuenow',String(value));document.getElementById('spirit-fill').style.width=value+'%';
 }
 (function installSpirit(){
-  const button=document.getElementById('spirit-ultimate');if(!button)return;
-  button.addEventListener('pointerdown',e=>e.stopPropagation());
-  button.addEventListener('click',e=>{e.stopPropagation();launchSpiritUltimate();});
-  button.addEventListener('keydown',e=>{if(e.code==='Enter'||e.code==='Space'){e.preventDefault();e.stopPropagation();launchSpiritUltimate();}});
+  for(const id of ['spirit-ultimate','mobile-ultimate']){
+    const button=document.getElementById(id);
+    if(!button)continue;
+    button.addEventListener('pointerdown',e=>e.stopPropagation());
+    button.addEventListener('click',e=>{e.stopPropagation();launchSpiritUltimate();});
+    button.addEventListener('keydown',e=>{
+      if(e.code==='Enter'||e.code==='Space'){
+        e.preventDefault();e.stopPropagation();launchSpiritUltimate();
+      }
+    });
+  }
 })();
 
 </script>
