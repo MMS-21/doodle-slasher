@@ -450,6 +450,7 @@
 .battle-toolbar[hidden],#touch-controls.battle-hidden{display:none!important}
 .battle-toolbar button,#mobile-extras button,.upgrade-hub-tabs button{font:700 13px/1.2 system-ui,sans-serif;min-height:44px;padding:8px 14px;border:2px solid #342b38;border-radius:8px;background:#fff8e9;color:#302636;cursor:pointer}
 .battle-toolbar #upgrade-hub-toggle{background:#ffe29a}
+.battle-toolbar svg{display:none}
 #controls-toggle{top:62px;min-height:44px}
 #upgrade-alert{display:none!important}
 #quick-status{width:auto!important;display:block!important;pointer-events:none;top:12%;left:2.8%}
@@ -505,25 +506,27 @@
   #touch-controls .mobile-combat .touch-primary span {border-bottom:2px solid #b33b48;pointer-events:none;}
   #touch-controls .mobile-combat .touch-saw span {border-color:#b56b24;}
   #touch-controls .mobile-combat .touch-primary.pressed {transform:translateY(2px);border-color:#302734!important;}
-  #touch-controls .mobile-combat .mobile-ultimate {
-    grid-column:3;
-    grid-row:1;
-    width:var(--fire-diameter);
-    height:48px;
-    font:700 12px/1 'Gochi Hand',cursive;
-    background:#e9dbf0;
-    border-color:#624776;
-    color:#523963;
+  #touch-controls .mobile-combat .mobile-ultimate,
+  #touch-controls .mobile-combat .mobile-bomb,
+  #touch-controls .mobile-combat .mobile-dash,
+  #touch-controls .mobile-combat .mobile-swap {
+    height:44px;
+    min-width:44px;
+    width:48px;
+    padding:3px;
+    box-sizing:border-box;
     text-shadow:none;
   }
-  #touch-controls .mobile-combat .mobile-ultimate.ready {background:#653d87;color:#fff7ef;border-color:#e2c3f5;}
-  #touch-controls .mobile-combat .touch-jump{grid-column:1;grid-row:2;width:52px;height:56px;background:#225e99;color:white;border-color:#bddcff}
-  #touch-controls .mobile-combat .mobile-dash{grid-column:1;grid-row:1;width:52px;height:48px;background:#34394e}
-  #touch-controls .mobile-combat .mobile-bomb{grid-column:2;grid-row:1;width:var(--saw-diameter);height:48px;position:relative;flex-direction:row;gap:2px;background:#60358b;transform:none}
-  #touch-controls .mobile-bomb .bomb-count{position:static;flex:none}
-  #touch-controls .mobile-bomb .bomb-label{position:absolute;bottom:2px;left:0;width:100%;font:700 8px system-ui,sans-serif}
-  #touch-controls .mobile-bomb.cooldown{opacity:.6;filter:none}
-  #touch-controls .mobile-bomb:disabled{opacity:.55}
+  #touch-controls .mobile-combat .mobile-ultimate {grid-column:1;grid-row:2;flex-direction:column;gap:1px;color:#593879;}
+  #touch-controls .mobile-combat .mobile-ultimate svg {width:18px;height:18px;fill:#d9bbed;stroke:currentColor;stroke-width:1.8;}
+  #touch-controls .mobile-combat .mobile-bomb {grid-column:1;grid-row:1;position:relative;inset:auto;flex-direction:column;gap:0;}
+  #touch-controls .mobile-combat .mobile-bomb svg {width:20px;height:20px;}
+  #touch-controls .mobile-combat .mobile-bomb .bomb-label {position:static;width:auto;font:inherit;}
+  #touch-controls .mobile-combat .mobile-bomb .bomb-count {right:-4px;top:-5px;bottom:auto;width:16px;height:16px;font-size:10px;background:#60358b;}
+  #touch-controls .mobile-combat .mobile-bomb:disabled {opacity:.6;}
+  #touch-controls .mobile-combat .mobile-dash {grid-column:2;grid-row:1;}
+  #touch-controls .mobile-combat .mobile-swap {grid-column:3;grid-row:1;position:relative;top:calc(var(--saw-diameter) - var(--fire-diameter));}
+  #touch-controls .mobile-combat .mobile-swap svg {width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
   #touch-controls .battle-specials{position:absolute;bottom:calc(var(--saw-diameter) + 72px);right:max(12px,env(safe-area-inset-right));left:auto;display:flex;gap:5px;pointer-events:auto}
   #touch-controls .battle-specials button{width:58px;min-height:44px;height:44px;font:700 10px/1 system-ui,sans-serif;background:#34394e}
   #touch-controls .joystick-base{background:#302d3b77;border-color:#f7e5b9bb}
@@ -635,11 +638,42 @@
  .battle-toolbar {
    top:max(44px,14dvh,calc(env(safe-area-inset-top) + 44px));
    right:max(12px,env(safe-area-inset-right));
+   flex-direction:column;
    gap:6px;
  }
- .battle-toolbar button {font:700 15px/1 'Gochi Hand',cursive;padding:6px 10px;border-radius:5px 8px 4px 7px;}
- #weapon-hud {top:calc(max(44px,14dvh) + 48px);width:184px;max-width:38%;grid-template-columns:minmax(0,1fr) auto;}
- #weapon-hud .weapon-quick-actions {flex-direction:row;gap:4px;}
+ .battle-toolbar button {
+   position:relative;
+   display:flex;
+   flex-direction:column;
+   justify-content:center;
+   align-items:center;
+   width:52px;
+   height:44px;
+   padding:3px;
+   gap:2px;
+   font:700 10px/1 'Gochi Hand',cursive;
+ }
+ .battle-toolbar svg {
+   display:block;
+   width:20px;
+   height:20px;
+   fill:none;
+   stroke:currentColor;
+   stroke-width:1.7;
+   stroke-linecap:round;
+   stroke-linejoin:round;
+ }
+ #upgrade-count:not(:empty) {
+   position:absolute;
+   top:-5px;
+   right:-4px;
+   padding:3px 4px;
+   background:#fff0bc;
+   border:1px solid #302734;
+   border-radius:40%;
+ }
+ #weapon-hud {top:calc(max(44px,14dvh) + 48px);right:calc(max(12px,env(safe-area-inset-right)) + 58px);width:116px;grid-template-columns:minmax(0,1fr) auto;}
+ #weapon-hud .weapon-quick-actions [data-weapon-action="swap"] {display:none;}
  #weapon-hud .weapon-view img {height:25px;}
  #touch-controls .battle-specials {
    bottom:calc(var(--saw-diameter) + 18px);
@@ -648,6 +682,24 @@
  #touch-controls[data-hand="left"] .battle-specials {
    left:calc(52px + var(--saw-diameter) + var(--fire-diameter) + max(36px,env(safe-area-inset-left) + 24px));
  }
+ #touch-controls .mobile-combat .touch-key:not(.touch-primary),
+ #touch-controls .battle-specials .touch-key,
+ .battle-toolbar button,
+ #mobile-extras button,
+ #weapon-hud .weapon-quick-actions button,
+ #rotate-device button {
+   background:#fff6df;
+   color:#302734;
+   border:2px solid #302734;
+   border-radius:7px 10px 6px 9px / 9px 6px 10px 7px;
+   box-shadow:1px 2px 0 #30273465;
+   font-family:'Gochi Hand',cursive;
+   text-shadow:none;
+ }
+ #touch-controls .mobile-combat .mobile-ultimate {background:#f1e3fb;color:#593879;font-size:11px;}
+ #touch-controls .joystick-base {background:#fff6df80;border-color:#302734b3;}
+ #touch-controls .joystick-knob {background:#edd8a9;border:2px solid #302734;}
+ #touch-controls .joystick-direction {color:#302734;}
 }
 
 </style>
@@ -862,7 +914,7 @@ button { font:inherit; cursor:pointer; }
           <h3 id="control-fight-title">COMBAT <span>02 / RED</span></h3>
           <div class="controls-entry"><div class="key-stack"><kbd>SPACE</kbd></div><div><strong>Chainsaw attack</strong><small>Space is always for combat, never for selecting upgrades.</small></div></div>
           <div class="controls-entry"><div class="key-stack"><kbd>R</kbd><kbd>Q</kbd><kbd>E</kbd></div><div><strong>Special abilities <em>UNLOCKABLE</em></strong><small>Spin Cycle, Boomerang Saw, and Uppercut.</small></div></div>
-          <div class="controls-entry"><div class="key-stack"><kbd>V</kbd></div><div><strong>Plasma ultimate</strong><small>Collect 100 Spirit from blue orbs, then press V or tap the Spirit bar to clear nearby enemies. Controller: click both sticks.</small></div></div><div class="controls-entry"><div class="key-stack"><kbd>F</kbd><kbd>C</kbd><kbd>X</kbd></div><div><strong>Weapons</strong><small>Fire · Switch equipped weapon · Reload.</small></div></div>
+          <div class="controls-entry"><div class="key-stack"><kbd>V</kbd></div><div><strong>Plasma ultimate</strong><small>Collect 100 Spirit from blue orbs, then press V or tap Ultimate when it appears to clear nearby enemies. Controller: click both sticks.</small></div></div><div class="controls-entry"><div class="key-stack"><kbd>F</kbd><kbd>C</kbd><kbd>X</kbd></div><div><strong>Weapons</strong><small>Fire · Switch equipped weapon · Reload.</small></div></div>
           <div class="controls-entry"><div class="key-stack"><kbd>G</kbd></div><div><strong>Carpet grenades</strong><small>Throw while flying. Three bombs per carpet ride.</small></div></div>
         </section>
         <section class="controls-group group-book" aria-labelledby="control-book-title">
@@ -897,19 +949,23 @@ button { font:inherit; cursor:pointer; }
   <button id="upgrade-alert" hidden type="button" aria-live="polite"></button>
   <div id="touch-controls" data-size="compact" role="group" aria-label="Landscape touch game controls">
     <div class="mobile-movement" aria-label="Movement">
-      <div class="joystick-caption">MOVE · ↓ DUCK</div>
-      <div id="mobile-joystick" class="joystick-base" role="group" aria-label="Drag left or right to move. Down ducks. On the carpet, drag up or down to fly.">
+      <div class="joystick-caption">↑ JUMP · ↓ DUCK</div>
+      <div id="mobile-joystick" class="joystick-base" role="group" aria-label="Drag left or right to move. Up jumps and down ducks. On the carpet, drag up or down to fly.">
         <span class="joystick-direction joystick-left" aria-hidden="true">◀</span>
         <span class="joystick-direction joystick-right" aria-hidden="true">▶</span>
         <div id="joystick-knob" class="joystick-knob" aria-hidden="true"></div>
       </div>
     </div>
     <div class="mobile-combat" aria-label="Primary combat controls">
-      <button type="button" class="touch-key touch-jump" data-game-key="PadJump" aria-label="Jump or rise on the carpet">JUMP</button>
       <button type="button" class="touch-key mobile-dash" data-game-key="PadDash" aria-label="Dash" hidden disabled>DASH</button>
       <button type="button" class="touch-key touch-primary touch-saw" data-game-key="PadAttack" aria-label="Chainsaw attack"><svg viewBox="0 0 36 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l2-6 10 1 1 9-12 1z" fill="#e6a443"/><path d="M15 10l16-2 2 3-2 4-15 2z" fill="#d5d4cf"/><path d="M6 7V4l7 1v3m5 8 2 2m2-3 2 2m2-3 2 2m2-3 2 1"/></svg><span>SAW</span></button>
       <button type="button" class="touch-key touch-primary touch-fire" data-game-key="PadWeaponFire" aria-label="Fire equipped weapon"><svg viewBox="0 0 36 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l22 1-1 7-10-1-3 8-7-2 3-6-4-1z" fill="#b3b8bd"/><path d="M9 14l5 1-2 6-7-2z" fill="#d96c62"/><path d="M28 9l4-4m-3 8 5 1m-6 1 3 4" stroke="#a7283c"/></svg><span>FIRE</span></button>
-      <button type="button" class="touch-key mobile-ultimate" id="mobile-ultimate" disabled aria-label="Ultimate requires 100 Spirit">ULTIMATE</button>
+      <button type="button" class="touch-key mobile-swap" id="mobile-weapon-swap" aria-label="Swap weapon" title="Swap weapon">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 8 15-1m-4-4 5 4-5 5M20 16l-15 1m4-5-5 5 5 4"/></svg>
+      </button>
+      <button type="button" class="touch-key mobile-ultimate" id="mobile-ultimate" hidden disabled aria-label="Activate plasma ultimate">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m13 2 2 7 7 2-7 3-2 8-3-8-8-2 8-3z"/></svg><span>ULTIMATE</span>
+      </button>
       <button class="touch-key touch-small mobile-bomb" data-game-key="PadCarpetGrenade" aria-label="Throw a magic carpet grenade" type="button" hidden disabled>
         <svg viewBox="0 0 48 48" width="27" height="27" aria-hidden="true" focusable="false">
           <path d="M20 10l5-3 6 4-4 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
@@ -919,7 +975,7 @@ button { font:inherit; cursor:pointer; }
           <path d="M16 28c3-5 6-7 12-8" fill="none" stroke="#a6a1c7" stroke-width="3" stroke-linecap="round"/>
           <circle cx="30" cy="34" r="2" fill="#ff8e59"/>
         </svg>
-        <span class="bomb-count" aria-hidden="true">3</span><span class="bomb-label">CARPET BOMB</span>
+        <span class="bomb-count" aria-hidden="true">3</span><span class="bomb-label">BOMB</span>
       </button>
 
     </div>
@@ -941,11 +997,18 @@ button { font:inherit; cursor:pointer; }
         <button type="button" class="touch-key" id="mobile-button-size" data-mobile-action="size" aria-pressed="false">BUTTON SIZE: COMPACT</button>
         <button type="button" class="touch-key" data-preference="hand">HAND: RIGHT</button>
         <button type="button" class="touch-key" data-preference="opacity">CONTROLS: SOLID</button>
-        <button type="button" class="touch-key" data-preference="jump">JOYSTICK JUMP: OFF</button>
       </div>
-      <p class="pause-help">Hold Saw or Fire to attack. Tap your weapon display to switch. Empty guns reload automatically. Coins buy gear and companion ranks; XP earns skill points. Collect Spirit orbs, then use V or tap the full Spirit bar for a plasma ultimate. Coins, Spirit, points and upgrades reset each run.</p>
+      <p class="pause-help">Hold Saw or Fire to attack. Tap the arrows above Fire to switch weapons. Empty guns reload automatically. Coins buy gear and companion ranks; XP earns skill points. Collect Spirit orbs, then use V or tap Ultimate when it appears. Coins, Spirit, points and upgrades reset each run.</p>
     </section>
-  <nav class="battle-toolbar" aria-label="Game menus"><button type="button" id="upgrade-hub-toggle">UPGRADES <span id="upgrade-count"></span></button>      <button class="touch-key touch-small mobile-more" id="mobile-more" type="button" aria-label="Pause and control preferences" aria-controls="mobile-extras" aria-expanded="false">PAUSE</button></nav>
+  <nav class="battle-toolbar" aria-label="Game menus">
+    <button type="button" id="upgrade-hub-toggle">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6C9 3 5 3 2 4l1 15c3-1 7-1 9 1 3-3 6-3 10-2V4c-4-1-7 0-10 2zm0 0v14M6 9l3 1m7-1 3-1m-3 5 3-1"/></svg>
+      <span>UPGRADES <span id="upgrade-count"></span></span>
+    </button>
+    <button type="button" id="mobile-more" aria-label="Pause and control preferences" aria-controls="mobile-extras" aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 4 3 1v14l-4 1zm7 1 4-1 1 15-4 1z"/></svg><span>PAUSE</span>
+    </button>
+  </nav>
   <section id="rotate-device" class="rotate-device" aria-label="Landscape mode required">
     <div class="rotate-card">
       <div class="rotate-icon" aria-hidden="true">▭ ↻</div>
@@ -4670,10 +4733,10 @@ playWeaponSample=function playWeaponSampleWithRecordings(id){
 let tutorialDoneThisSession=false;
 const TUTORIAL_LESSONS=[
   {name:'PENCIL LEGS',text:'Move with A / D or the left and right arrows.',tip:'Walk at least 90 pixels.'},
-  {name:'JUMP THE LINE',text:'Press W, Up Arrow, or JUMP to leap.',tip:'Get your feet off the ground.'},
+  {name:'JUMP THE LINE',text:'Press W or Up Arrow, or push the joystick up.',tip:'Get your feet off the ground.'},
   {name:'CHAINSAW PRACTICE',text:'Approach the practice zombie and press SPACE or SAW.',tip:'Hit the target with your chainsaw.'},
   {name:'RANGE PRACTICE',text:'Use F or FIRE to shoot the target. Your pistol is equipped.',tip:'Fire at the target. C changes weapons; X reloads.'},
-  {name:'MAGIC CARPET',text:'You have a practice carpet! Hold W or JUMP to fly upward.',tip:'Drag the joystick down or use S to descend.'},
+  {name:'MAGIC CARPET',text:'You have a practice carpet! Hold W or push the joystick up to fly upward.',tip:'Drag the joystick down or use S to descend.'},
   {name:'BOMB DELIVERY',text:'Press G or BOMB to throw a grenade from your magic carpet.',tip:'Three carpet bombs per ride. You can keep your regular weapon equipped.'},
   {name:'SKILL BOOK',text:'Tap UPGRADES or press L to inspect skills, then return.',tip:'XP earns skill points. Coins buy gear and companion ranks.'},
 ];
@@ -5105,7 +5168,7 @@ if(typeof document!=='undefined'&&document.addEventListener)document.addEventLis
     updateKey('TouchLeft',x < -deadzone);
     updateKey('TouchRight',x > deadzone);
     // Vertical joystick movement works on the ground as jump/duck, and during flight as rise/descend.
-    updateKey('TouchJoyJump',y < -deadzone && (G.carpetT>0 || panel.dataset.joystickJump==='true'));
+    updateKey('TouchJoyJump',y < -deadzone);
     updateKey('TouchJoyDuck',y > deadzone);
   }
   function releaseJoystick(e){
@@ -5170,7 +5233,7 @@ if(typeof document!=='undefined'&&document.addEventListener)document.addEventLis
   let bombVisible=false;
   function refreshBomb(){
     const game=typeof G==='undefined'?null:G;
-    const visible=!!(game&&game.state==='play'&&!game.paused&&!game.choosing&&!game.hero?.dead&&game.carpetT>0);
+    const visible=!!(game&&game.state==='play'&&!game.paused&&!game.choosing&&!game.hero?.dead&&game.carpetT>0&&game.carpetAmmo>0);
     if(bombButton){
       if(visible!==bombVisible){bombVisible=visible;bombButton.hidden=!visible;}
       const cooldown=visible&&game.carpetGrenadeCd>0;
@@ -5249,18 +5312,14 @@ function closeBattlePause(restoreFocus=true){
 }
 (function installBattleUI(){
   const panel=document.getElementById('touch-controls');
-  let prefs={hand:'right',opacity:'solid',jump:false};
+  let prefs={hand:'right',opacity:'solid'};
   try{prefs={...prefs,...JSON.parse(localStorage.getItem('doodle-slasher-controls')||'{}')};}catch(_){}
   function syncPrefs(){
     panel.dataset.hand=prefs.hand==='left'?'left':'right';
-    document.documentElement.dataset.controlHand=panel.dataset.hand;
     panel.dataset.opacity=prefs.opacity==='soft'?'soft':'solid';
-    panel.dataset.joystickJump=String(prefs.jump===true);
-    for(const [key,label] of [['hand','HAND: '+panel.dataset.hand.toUpperCase()],['opacity','CONTROLS: '+(prefs.opacity==='soft'?'TRANSLUCENT':'SOLID')],['jump','JOYSTICK JUMP: '+(prefs.jump?'ON':'OFF')]]){
+    for(const [key,label] of [['hand','HAND: '+panel.dataset.hand.toUpperCase()],['opacity','CONTROLS: '+(prefs.opacity==='soft'?'TRANSLUCENT':'SOLID')]]){
       const button=document.querySelector(`[data-preference="${key}"]`);button.textContent=label;
-      if(key==='jump')button.setAttribute('aria-pressed',String(prefs.jump));
     }
-    const caption=panel.querySelector('.joystick-caption');caption.textContent=prefs.jump?'MOVE · ↑ JUMP · ↓ DUCK':'MOVE · ↓ DUCK';
     try{localStorage.setItem('doodle-slasher-controls',JSON.stringify(prefs));}catch(_){}
   }
   syncPrefs();
@@ -5271,7 +5330,7 @@ function closeBattlePause(restoreFocus=true){
   document.addEventListener('click',e=>{
     const hub=e.target.closest('[data-hub]');if(hub){openUpgradeHub(hub.dataset.hub);return;}
     const preference=e.target.closest('[data-preference]');
-    if(preference){const key=preference.dataset.preference;prefs[key]=key==='jump'?!prefs.jump:key==='hand'?(prefs.hand==='left'?'right':'left'):(prefs.opacity==='soft'?'solid':'soft');syncPrefs();return;}
+    if(preference){const key=preference.dataset.preference;prefs[key]=key==='hand'?(prefs.hand==='left'?'right':'left'):(prefs.opacity==='soft'?'solid':'soft');syncPrefs();return;}
     const action=e.target.closest('[data-pause-action]')?.dataset.pauseAction;
     if(!action)return;
     closeBattlePause(false);
@@ -5287,6 +5346,16 @@ function closeBattlePause(restoreFocus=true){
       const buttons=[...pause.querySelectorAll('button:not(:disabled)')],first=buttons[0],last=buttons.at(-1);
       if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
       else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+    }
+  });
+  const mobileSwap=document.getElementById('mobile-weapon-swap');
+  mobileSwap?.addEventListener('pointerdown',e=>e.stopPropagation());
+  mobileSwap?.addEventListener('click',()=>{
+    if(G.state==='play'&&!G.choosing&&!G.paused&&!G.hero?.dead)arsenalCycle();
+  });
+  mobileSwap?.addEventListener('keydown',e=>{
+    if(e.code==='Enter'||e.code==='Space'){
+      e.preventDefault();e.stopPropagation();mobileSwap.click();
     }
   });
   const hud=document.getElementById('weapon-hud');
@@ -5504,14 +5573,13 @@ function refreshSpiritHUD(){
   const root=document.getElementById('spirit-hud');if(!root)return;
   root.hidden=G.state!=='play'||G.choosing||G.paused||G.hero?.dead||G.tutorialActive;
   const mobile=document.getElementById('mobile-ultimate');
-  if(root.hidden){if(mobile)mobile.disabled=true;return;}
+  if(root.hidden){if(mobile){mobile.hidden=true;mobile.disabled=true;}return;}
   const value=Math.min(SPIRIT_MAX,G.spirit||0),ready=value>=SPIRIT_MAX&&!(G.spiritUltimateT>0);
   const button=document.getElementById('spirit-ultimate'),meter=document.getElementById('spirit-meter');
   button.disabled=!ready;button.classList.toggle('ready',ready);
   if(mobile){
+    mobile.hidden=!ready;
     mobile.disabled=!ready;
-    mobile.classList.toggle('ready',ready);
-    mobile.setAttribute('aria-label',ready?'Activate plasma ultimate':`Ultimate requires 100 Spirit. Current Spirit: ${value}.`);
   }
   button.setAttribute('aria-label',ready?'Launch plasma ultimate. Keyboard V. Clears nearby enemies.':`Spirit ${value} of 100. Collect blue spirit orbs from enemies.`);
   button.title=ready?'Plasma explosion: V or tap. Clears nearby enemies.':'Collect spirit orbs to fill the bar (100).';
